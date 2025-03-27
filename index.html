@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>נומרולוגיה ישראלית - גלה את סודות המספרים שלך</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.png" alt="לוגו נומרולוגיה ישראלית" class="logo">
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="hero">
+            <h1>גלה את סודות המספרים שלך – תחזית נומרולוגית בהתאמה אישית</h1>
+            <p class="subtitle">בחר את סוג התחזית הרצויה, הזן את פרטיך וקבל ניתוח נומרולוגי מדויק בזמן אמת.</p>
+        </section>
+
+        <section class="forecast-selection">
+            <h2>בחר את סוג התחזית</h2>
+            <div class="forecast-cubes">
+                <div class="cube personal" id="personal-forecast">
+                    <div class="cube-icon">🔮</div>
+                    <div class="cube-title">תחזית אישית</div>
+                </div>
+                <div class="cube professional" id="professional-forecast">
+                    <div class="cube-icon">💼</div>
+                    <div class="cube-title">תחזית מקצועית</div>
+                </div>
+                <div class="cube couple" id="couple-forecast">
+                    <div class="cube-icon">❤️</div>
+                    <div class="cube-title">תחזית זוגית</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="form-container">
+            <form id="personal-form" class="forecast-form">
+                <h3>תחזית אישית</h3>
+                <div class="form-group">
+                    <label for="personal-name">שם מלא</label>
+                    <input type="text" id="personal-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="personal-dob">תאריך לידה</label>
+                    <input type="date" id="personal-dob" name="dob" required>
+                </div>
+                <div class="form-group">
+                    <label>מין</label>
+                    <div class="radio-group">
+                        <input type="radio" id="personal-male" name="gender" value="male" required>
+                        <label for="personal-male">זכר</label>
+                        <input type="radio" id="personal-female" name="gender" value="female">
+                        <label for="personal-female">נקבה</label>
+                        <input type="radio" id="personal-other" name="gender" value="other">
+                        <label for="personal-other">אחר</label>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">קבל תחזית</button>
+            </form>
+
+            <form id="professional-form" class="forecast-form hidden">
+                <h3>תחזית מקצועית</h3>
+                <div class="form-group">
+                    <label for="professional-name">שם מלא</label>
+                    <input type="text" id="professional-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="professional-dob">תאריך לידה</label>
+                    <input type="date" id="professional-dob" name="dob" required>
+                </div>
+                <div class="form-group">
+                    <label>מין</label>
+                    <div class="radio-group">
+                        <input type="radio" id="professional-male" name="gender" value="male" required>
+                        <label for="professional-male">זכר</label>
+                        <input type="radio" id="professional-female" name="gender" value="female">
+                        <label for="professional-female">נקבה</label>
+                        <input type="radio" id="professional-other" name="gender" value="other">
+                        <label for="professional-other">אחר</label>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">קבל תחזית</button>
+            </form>
+
+            <form id="couple-form" class="forecast-form hidden">
+                <h3>תחזית זוגית</h3>
+                <div class="form-section">
+                    <h4>פרטיך האישיים</h4>
+                    <div class="form-group">
+                        <label for="couple-name1">שם מלא</label>
+                        <input type="text" id="couple-name1" name="name1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="couple-dob1">תאריך לידה</label>
+                        <input type="date" id="couple-dob1" name="dob1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>מין</label>
+                        <div class="radio-group">
+                            <input type="radio" id="couple-male1" name="gender1" value="male" required>
+                            <label for="couple-male1">זכר</label>
+                            <input type="radio" id="couple-female1" name="gender1" value="female">
+                            <label for="couple-female1">נקבה</label>
+                            <input type="radio" id="couple-other1" name="gender1" value="other">
+                            <label for="couple-other1">אחר</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4>פרטי בן/בת הזוג</h4>
+                    <div class="form-group">
+                        <label for="couple-name2">שם מלא</label>
+                        <input type="text" id="couple-name2" name="name2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="couple-dob2">תאריך לידה</label>
+                        <input type="date" id="couple-dob2" name="dob2" required>
+                    </div>
+                    <div class="form-group">
+                        <label>מין</label>
+                        <div class="radio-group">
+                            <input type="radio" id="couple-male2" name="gender2" value="male" required>
+                            <label for="couple-male2">זכר</label>
+                            <input type="radio" id="couple-female2" name="gender2" value="female">
+                            <label for="couple-female2">נקבה</label>
+                            <input type="radio" id="couple-other2" name="gender2" value="other">
+                            <label for="couple-other2">אחר</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">קבל תחזית</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 נומרולוגיה ישראלית. כל הזכויות שמורות.</p>
+            <div class="footer-links">
+                <a href="privacy.html">מדיניות פרטיות</a>
+                <a href="terms.html">תנאי שימוש</a>
+                <a href="contact.html">צור קשר</a>
+            </div>
+        </div>
+        <!-- Google AdSense -->
+        <div class="ad-container">
+            <!-- קוד להטמעת פרסומת Google AdSense -->
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
