@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תחזית זוגית - נומרולוגיה ישראלית</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/results.css">
+    <link rel="stylesheet" href="css/couple-results.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <a href="index.html">
+                <img src="images/logo.png" alt="לוגו נומרולוגיה ישראלית" class="logo">
+            </a>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">בית</a></li>
+                <li><a href="#" id="user-menu-btn">החשבון שלי</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- User Menu (מוצג בלחיצה) -->
+    <div class="user-menu hidden">
+        <div class="user-menu-content">
+            <div class="user-info logged-in hidden">
+                <p>שלום, <span class="user-name"></span></p>
+                <button id="logout-btn" class="btn-small">התנתק</button>
+            </div>
+            <div class="user-info logged-out">
+                <p>התחבר כדי לשמור את התחזיות שלך</p>
+                <button id="login-btn" class="btn-small">התחבר</button>
+                <button id="register-btn" class="btn-small">הרשם</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <section class="results-container">
+            <header class="results-header">
+                <div class="share-print-buttons">
+                    <button class="share-btn" title="שתף תחזית"><i class="fas fa-share-alt"></i></button>
+                    <button class="print-btn" title="הדפס תחזית"><i class="fas fa-print"></i></button>
+                </div>
+                <h1 id="forecast-title">התחזית הזוגית שלך</h1>
+                <div class="forecast-meta">
+                    <p class="forecast-date">תאריך: <span id="forecast-date"></span></p>
+                </div>
+            </header>
+
+            <div class="results-content">
+                <!-- מידע על בני הזוג -->
+                <section class="couple-info">
+                    <div class="couple-profiles">
+                        <div class="person-profile" id="person1-profile">
+                            <h3>בן/בת הזוג 1</h3>
+                            <div class="profile-info">
+                                <p class="profile-name">שם: <span id="person1-name"></span></p>
+                                <p class="profile-birthdate">תאריך לידה: <span id="person1-birthdate"></span></p>
+                                <div class="person-numbers">
+                                    <div class="number-item">
+                                        <span class="number-label">מספר גורל:</span>
+                                        <span class="number-value" id="person1-destiny"></span>
+                                    </div>
+                                    <div class="number-item">
+                                        <span class="number-label">מספר שם:</span>
+                                        <span class="number-value" id="person1-expression"></span>
+                                    </div>
+                                    <div class="number-item">
+                                        <span class="number-label">מספר אישיות:</span>
+                                        <span class="number-value" id="person1-personality"></span>
+                                    </div>
+                                    <div class="number-item">
+                                        <span class="number-label">מספר נפש:</span>
+                                        <span class="number-value" id="person1-soul"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="couple-connector">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        
+                        <div class="person-profile" id="person2-profile">
+                            <h3>בן/בת הזוג 2</h3>
+                            <div class="profile-info">
+                                <p class="profile-name">שם: <span id="person2-name"></span></p>
+                                <p class="profile-birthdate">תאריך לידה: <span id="person2-birthdate"></span></p>
+                                <div class="person-numbers">
+                                    <div class="number-item">
+                                        <span class="number-label">מספר גורל:</span>
+                                        <span class="number-value" id="person2-destiny"></span>
+                                    </div>
+                                    <div class="number-item">
+                                        <span class="number-label">מספר שם:</span>
+                                        <span class="number-value" id="person2-expression"></span>
+                                    </div>
+                                    <div class="number-item">
+                                        <span class="number-label">מספר אישיות:</span>
+                                        <span class="number-value" id="person2-personality"></span>
+                                    </div>
+                                    <div class="number-item">
+                                        <span class="number-label">מספר נפש:</span>
+                                        <span class="number-value" id="person2-soul"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- מספר תאימות זוגית -->
+                <section class="compatibility-number-section">
+                    <div class="destiny-number-circle">
+                        <div class="number" id="destiny-number">7</div>
+                        <div class="title">מספר תאימות זוגית</div>
+                    </div>
+                    <div class="destiny-explanation">
+                        <h2>משמעות מספר התאימות הזוגית שלכם</h2>
+                        <p id="destiny-explanation"></p>
+                    </div>
+                </section>
+
+                <!-- תכונות משותפות -->
+                <section class="personal-traits">
+                    <h2>תכונות משותפות</h2>
+                    <div class="traits-container" id="personal-traits">
+                        <!-- התכונות יטענו כאן באמצעות JavaScript -->
+                    </div>
+                </section>
+
+                <!-- חוזקות ואתגרים -->
+                <section class="strengths-challenges">
+                    <div class="section-half">
+                        <h2>החוזקות של הקשר</h2>
+                        <ul class="strengths-list" id="strengths-list">
+                            <!-- החוזקות יטענו כאן באמצעות JavaScript -->
+                        </ul>
+                    </div>
+                    <div class="section-half">
+                        <h2>האתגרים של הקשר</h2>
+                        <ul class="challenges-list" id="challenges-list">
+                            <!-- האתגרים יטענו כאן באמצעות JavaScript -->
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="recommendations">
+                    <h2>המלצות לשנה הקרובה</h2>
+                    <div class="recommendations-container">
+                        <ul class="recommendations-list" id="recommendations-list">
+                            <!-- ההמלצות יטענו כאן באמצעות JavaScript -->
+                        </ul>
+                    </div>
+                </section>
+            </div>
+
+            <div class="other-forecasts">
+                <h3>גלה עוד על עצמך</h3>
+                <div class="other-forecasts-buttons">
+                    <a href="index.html?type=personal" class="other-forecast-btn">תחזית אישית</a>
+                    <a href="index.html?type=professional" class="other-forecast-btn">תחזית מקצועית</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 נומרולוגיה ישראלית. כל הזכויות שמורות.</p>
+            <div class="footer-links">
+                <a href="privacy.html">מדיניות פרטיות</a>
+                <a href="terms.html">תנאי שימוש</a>
+                <a href="contact.html">צור קשר</a>
+            </div>
+        </div>
+        <!-- Google AdSense -->
+        <div class="ad-container">
+            <!-- קוד להטמעת פרסומת Google AdSense -->
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>התחברות</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">כתובת אימייל</label>
+                    <input type="email" id="login-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">סיסמה</label>
+                    <input type="password" id="login-password" name="password" required>
+                </div>
+                <button type="submit" class="submit-btn">התחבר</button>
+            </form>
+            <div class="modal-footer">
+                <p>אין לך חשבון? <a href="#" id="switch-to-register">הרשם כעת</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>הרשמה</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-name">שם מלא</label>
+                    <input type="text" id="register-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">כתובת אימייל</label>
+                    <input type="email" id="register-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">סיסמה</label>
+                    <input type="password" id="register-password" name="password" required>
+                </div>
+                <button type="submit" class="submit-btn">הרשם</button>
+            </form>
+            <div class="modal-footer">
+                <p>כבר יש לך חשבון? <a href="#" id="switch-to-login">התחבר</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/results.js"></script>
+    <script src="js/couple-results.js"></script>
+</body>
+</html>
