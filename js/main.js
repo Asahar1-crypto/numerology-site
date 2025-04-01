@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'couple': url = `couple-results.html?id=${forecastId}`; break;
             default: url = `results.html?id=${forecastId}`;
         }
+        console.log('Navigating to:', url);
         window.location.href = url;
     }
 
