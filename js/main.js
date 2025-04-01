@@ -397,47 +397,6 @@ function createPromptFromData(data) {
                 "soulNumber": (מספר הנפש),
                 "lifePathNumber": (מספר מסלול החיים),
                 "personalTraits": ["תכונה 1", "תכונה 2", "תכונה 3", "תכונה 4", "תכונה 5"],
-                "strengths": ["חוזקה 1", "חוזקה 2", "חוזקה 3"],
-                "challenges": ["אתגר 1", "אתגר 2", "אתגר 3"],
-                "recommendations": ["המלצה 1", "המלצה 2", "המלצה 3"]
-            }
-            
-            התחזית צריכה להיות מבוססת על העקרונות של נומרולוגיה מערבית והקבלה היהודית.`;
-            break;
-            
-        case 'professional':
-            prompt = `הכן תחזית נומרולוגית מקצועית עבור השם: ${data.name}, תאריך לידה: ${data.dob}, מגדר: ${data.gender}.
-            
-            נא לספק את המידע הבא בפורמט JSON:
-            {
-                "destinyNumber": (מספר הגורל - מספר בין 1-9),
-                "destinyExplanation": (הסבר על משמעות מספר הגורל בקריירה),
-                "expressionNumber": (מספר השם),
-                "expressionExplanation": (משמעותו בהקשר מקצועי),
-                "personalityNumber": (מספר האישיות),
-                "personalityExplanation": (השפעתו על יחסי עבודה),
-                "lifePathNumber": (מספר מסלול החיים),
-                "lifePathExplanation": (כיוון הקריירה המומלץ),
-                "careerFields": ["תחום 1", "תחום 2", "תחום 3"],
-                "strengths": ["חוזקה 1", "חוזקה 2", "חוזקה 3"],
-                "challenges": ["אתגר 1", "אתגר 2", "אתגר 3"],
-                "recommendations": ["המלצה 1", "המלצה 2", "המלצה 3"]
-            }
-            
-            התחזית צריכה להיות מבוססת על העקרונות של נומרולוגיה מערבית והקבלה היהודית.`;
-            break;
-            
-        case 'couple':
-            prompt = `הכן תחזית נומרולוגית זוגית עבור:
-            אדם 1: שם ${data.name1}, תאריך לידה: ${data.dob1}, מגדר: ${data.gender1}
-            אדם 2: שם ${data.name2}, תאריך לידה: ${data.dob2}, מגדר: ${data.gender2}
-            
-            נא לספק את המידע הבא בפורמט JSON:
-            {
-                "compatibilityScore": (ציון התאמה זוגית - מספר בין 1-100),
-                "destinyNumber1": (מספר הגורל של אדם 1),
-                "destinyNumber2": (מספר הגורל של אדם 2),
-                "coupleDescription": (הסבר על ההתאמה בין מספרי הגורל),
                 "strengths": ["חוזק בקשר 1", "חוזק בקשר 2", "חוזק בקשר 3"],
                 "challenges": ["אתגר בקשר 1", "אתגר בקשר 2", "אתגר בקשר 3"],
                 "recommendations": ["המלצה לחיזוק הקשר 1", "המלצה לחיזוק הקשר 2", "המלצה לחיזוק הקשר 3"],
@@ -842,4 +801,45 @@ document.head.insertAdjacentHTML('beforeend', `
             border-right: 4px solid #f44336;
         }
     </style>
-`);
+`); ["חוזקה 1", "חוזקה 2", "חוזקה 3"],
+                "challenges": ["אתגר 1", "אתגר 2", "אתגר 3"],
+                "recommendations": ["המלצה 1", "המלצה 2", "המלצה 3"]
+            }
+            
+            התחזית צריכה להיות מבוססת על העקרונות של נומרולוגיה מערבית והקבלה היהודית.`;
+            break;
+            
+        case 'professional':
+            prompt = `הכן תחזית נומרולוגית מקצועית עבור השם: ${data.name}, תאריך לידה: ${data.dob}, מגדר: ${data.gender}.
+            
+            נא לספק את המידע הבא בפורמט JSON:
+            {
+                "destinyNumber": (מספר הגורל - מספר בין 1-9),
+                "destinyExplanation": (הסבר על משמעות מספר הגורל בקריירה),
+                "expressionNumber": (מספר השם),
+                "expressionExplanation": (משמעותו בהקשר מקצועי),
+                "personalityNumber": (מספר האישיות),
+                "personalityExplanation": (השפעתו על יחסי עבודה),
+                "lifePathNumber": (מספר מסלול החיים),
+                "lifePathExplanation": (כיוון הקריירה המומלץ),
+                "careerFields": ["תחום 1", "תחום 2", "תחום 3"],
+                "strengths": ["חוזקה 1", "חוזקה 2", "חוזקה 3"],
+                "challenges": ["אתגר 1", "אתגר 2", "אתגר 3"],
+                "recommendations": ["המלצה 1", "המלצה 2", "המלצה 3"]
+            }
+            
+            התחזית צריכה להיות מבוססת על העקרונות של נומרולוגיה מערבית והקבלה היהודית.`;
+            break;
+            
+        case 'couple':
+            prompt = `הכן תחזית נומרולוגית זוגית עבור:
+            אדם 1: שם ${data.name1}, תאריך לידה: ${data.dob1}, מגדר: ${data.gender1}
+            אדם 2: שם ${data.name2}, תאריך לידה: ${data.dob2}, מגדר: ${data.gender2}
+            
+            נא לספק את המידע הבא בפורמט JSON:
+            {
+                "compatibilityScore": (ציון התאמה זוגית - מספר בין 1-100),
+                "destinyNumber1": (מספר הגורל של אדם 1),
+                "destinyNumber2": (מספר הגורל של אדם 2),
+                "coupleDescription": (הסבר על ההתאמה בין מספרי הגורל),
+                "strengths":
