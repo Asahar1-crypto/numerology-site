@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // אתחול שירות הנומרולוגיה
     // יש להחליף את 'YOUR_OPENAI_API_KEY' במפתח האמיתי שלך
-    const numerologyService = new NumerologyService('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');
+    const numerologyService = new NumerologyService('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');
     
     // הוספת אנימציית טעינה וסגנונות נוספים
     addStyles();
