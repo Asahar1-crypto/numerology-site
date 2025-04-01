@@ -4,87 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>נומרולוגיה ישראלית - גלה את סודות המספרים שלך</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        /* תיקון לבעיית התצוגה של הטפסים */
+        :root {
+            --primary-color: #6a0dad;
+            --secondary-color: #a87cc7;
+            --text-light: #ffffff;
+            --text-dark: #242038;
+            --bg-dark: #242038;
+            --bg-light: #f8f9fa;
+            --accent-color: #ffcc00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Segoe UI', 'Arial Hebrew', sans-serif;
+            direction: rtl;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* טפסים */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(36, 32, 56, 0.8);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
         .forecast-form {
-            display: none; /* כברירת מחדל הטפסים מוסתרים */
+            display: none;
         }
-        
-        /* אנימציות כניסה */
-        .hero, .forecast-selection, .form-container {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+
+        .form-group {
+            margin-bottom: 1.5rem;
         }
-        
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"],
+        input[type="date"] {
             width: 100%;
-            height: 100%;
-            background-color: rgba(36, 32, 56, 0.9);
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin-top: 2rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-light);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* קוביות בחירה */
+        .forecast-cubes {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cube {
+            width: 180px;
+            height: 180px;
+            background-color: #31294d;
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(168, 124, 199, 0.3);
-            border-radius: 50%;
-            border-top: 5px solid var(--secondary-color);
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+
+        .cube.active {
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        .cube-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            background: rgba(20, 17, 34, 0.9);
         }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header>
-        <div class="logo-container">
-            <img src="images/logo.png" alt="לוגו נומרולוגיה ישראלית" class="logo">
-        </div>
+        <h1>נומרולוגיה ישראלית</h1>
     </header>
 
     <!-- Main Content -->
     <main>
-        <section class="hero">
-            <h1>גלה את סודות המספרים שלך – תחזית נומרולוגית בהתאמה אישית</h1>
-            <p class="subtitle">בחר את סוג התחזית הרצויה, הזן את פרטיך וקבל ניתוח נומרולוגי מדויק בזמן אמת.</p>
-        </section>
+        <h2>גלה את סודות המספרים שלך</h2>
+        <p style="text-align: center; margin-bottom: 2rem;">בחר את סוג התחזית הרצויה, הזן את פרטיך וקבל ניתוח נומרולוגי מדויק.</p>
 
-        <section class="forecast-selection">
-            <h2>בחר את סוג התחזית</h2>
-            <div class="forecast-cubes">
-                <div class="cube personal" id="personal-forecast">
-                    <div class="cube-icon">🔮</div>
-                    <div class="cube-title">תחזית אישית</div>
-                </div>
-                <div class="cube professional" id="professional-forecast">
-                    <div class="cube-icon">💼</div>
-                    <div class="cube-title">תחזית מקצועית</div>
-                </div>
-                <div class="cube couple" id="couple-forecast">
-                    <div class="cube-icon">❤️</div>
-                    <div class="cube-title">תחזית זוגית</div>
-                </div>
+        <!-- בחירת סוג תחזית -->
+        <div class="forecast-cubes">
+            <div class="cube" id="personal-cube">
+                <div class="cube-icon">🔮</div>
+                <div class="cube-title">תחזית אישית</div>
             </div>
-        </section>
+            <div class="cube" id="professional-cube">
+                <div class="cube-icon">💼</div>
+                <div class="cube-title">תחזית מקצועית</div>
+            </div>
+            <div class="cube" id="couple-cube">
+                <div class="cube-icon">❤️</div>
+                <div class="cube-title">תחזית זוגית</div>
+            </div>
+        </div>
 
-        <section class="form-container">
+        <!-- טפסים -->
+        <div class="form-container">
+            <!-- טופס אישי -->
             <form id="personal-form" class="forecast-form">
                 <h3>תחזית אישית</h3>
                 <div class="form-group">
@@ -98,17 +194,20 @@
                 <div class="form-group">
                     <label>מין</label>
                     <div class="radio-group">
-                        <input type="radio" id="personal-male" name="gender" value="male" required>
-                        <label for="personal-male">זכר</label>
-                        <input type="radio" id="personal-female" name="gender" value="female">
-                        <label for="personal-female">נקבה</label>
-                        <input type="radio" id="personal-other" name="gender" value="other">
-                        <label for="personal-other">אחר</label>
+                        <label>
+                            <input type="radio" name="gender" value="male" required>
+                            זכר
+                        </label>
+                        <label>
+                            <input type="radio" name="gender" value="female">
+                            נקבה
+                        </label>
                     </div>
                 </div>
                 <button type="submit" class="submit-btn">קבל תחזית</button>
             </form>
 
+            <!-- טופס מקצועי -->
             <form id="professional-form" class="forecast-form">
                 <h3>תחזית מקצועית</h3>
                 <div class="form-group">
@@ -122,20 +221,23 @@
                 <div class="form-group">
                     <label>מין</label>
                     <div class="radio-group">
-                        <input type="radio" id="professional-male" name="gender" value="male" required>
-                        <label for="professional-male">זכר</label>
-                        <input type="radio" id="professional-female" name="gender" value="female">
-                        <label for="professional-female">נקבה</label>
-                        <input type="radio" id="professional-other" name="gender" value="other">
-                        <label for="professional-other">אחר</label>
+                        <label>
+                            <input type="radio" name="gender" value="male" required>
+                            זכר
+                        </label>
+                        <label>
+                            <input type="radio" name="gender" value="female">
+                            נקבה
+                        </label>
                     </div>
                 </div>
                 <button type="submit" class="submit-btn">קבל תחזית</button>
             </form>
 
+            <!-- טופס זוגי -->
             <form id="couple-form" class="forecast-form">
                 <h3>תחזית זוגית</h3>
-                <div class="form-section">
+                <div style="margin-bottom: 1.5rem;">
                     <h4>פרטיך האישיים</h4>
                     <div class="form-group">
                         <label for="couple-name1">שם מלא</label>
@@ -145,20 +247,9 @@
                         <label for="couple-dob1">תאריך לידה</label>
                         <input type="date" id="couple-dob1" name="dob1" required>
                     </div>
-                    <div class="form-group">
-                        <label>מין</label>
-                        <div class="radio-group">
-                            <input type="radio" id="couple-male1" name="gender1" value="male" required>
-                            <label for="couple-male1">זכר</label>
-                            <input type="radio" id="couple-female1" name="gender1" value="female">
-                            <label for="couple-female1">נקבה</label>
-                            <input type="radio" id="couple-other1" name="gender1" value="other">
-                            <label for="couple-other1">אחר</label>
-                        </div>
-                    </div>
                 </div>
                 
-                <div class="form-section">
+                <div>
                     <h4>פרטי בן/בת הזוג</h4>
                     <div class="form-group">
                         <label for="couple-name2">שם מלא</label>
@@ -168,71 +259,108 @@
                         <label for="couple-dob2">תאריך לידה</label>
                         <input type="date" id="couple-dob2" name="dob2" required>
                     </div>
-                    <div class="form-group">
-                        <label>מין</label>
-                        <div class="radio-group">
-                            <input type="radio" id="couple-male2" name="gender2" value="male" required>
-                            <label for="couple-male2">זכר</label>
-                            <input type="radio" id="couple-female2" name="gender2" value="female">
-                            <label for="couple-female2">נקבה</label>
-                            <input type="radio" id="couple-other2" name="gender2" value="other">
-                            <label for="couple-other2">אחר</label>
-                        </div>
-                    </div>
                 </div>
                 
                 <button type="submit" class="submit-btn">קבל תחזית</button>
             </form>
-        </section>
+        </div>
     </main>
 
     <!-- Footer -->
     <footer>
-        <div class="footer-content">
-            <p>&copy; 2025 נומרולוגיה ישראלית. כל הזכויות שמורות.</p>
-            <div class="footer-links">
-                <a href="privacy.html">מדיניות פרטיות</a>
-                <a href="terms.html">תנאי שימוש</a>
-                <a href="contact.html">צור קשר</a>
-            </div>
-        </div>
-        <!-- Google AdSense -->
-        <div class="ad-container">
-            <!-- קוד להטמעת פרסומת Google AdSense -->
-        </div>
+        <p>© 2025 נומרולוגיה ישראלית. כל הזכויות שמורות.</p>
     </footer>
 
     <script>
-        // סקריפט לאנימציית כניסת אלמנטים
         document.addEventListener('DOMContentLoaded', function() {
-            // אנימציות כניסה לאלמנטים
-            const hero = document.querySelector('.hero');
-            const forecastSelection = document.querySelector('.forecast-selection');
-            const formContainer = document.querySelector('.form-container');
+            // הטפסים
+            const personalForm = document.getElementById('personal-form');
+            const professionalForm = document.getElementById('professional-form');
+            const coupleForm = document.getElementById('couple-form');
             
-            if (hero) {
-                setTimeout(() => {
-                    hero.style.opacity = '1';
-                    hero.style.transform = 'translateY(0)';
-                }, 100);
-            }
+            // הקוביות
+            const personalCube = document.getElementById('personal-cube');
+            const professionalCube = document.getElementById('professional-cube');
+            const coupleCube = document.getElementById('couple-cube');
             
-            if (forecastSelection) {
-                setTimeout(() => {
-                    forecastSelection.style.opacity = '1';
-                    forecastSelection.style.transform = 'translateY(0)';
-                }, 300);
-            }
+            // הצגת הטופס האישי כברירת מחדל
+            personalForm.style.display = 'block';
+            personalCube.classList.add('active');
             
-            if (formContainer) {
-                setTimeout(() => {
-                    formContainer.style.opacity = '1';
-                    formContainer.style.transform = 'translateY(0)';
-                }, 500);
-            }
+            // מאזיני אירועים לקוביות
+            personalCube.addEventListener('click', function() {
+                // הסתרת כל הטפסים
+                personalForm.style.display = 'none';
+                professionalForm.style.display = 'none';
+                coupleForm.style.display = 'none';
+                
+                // הצגת הטופס המתאים
+                personalForm.style.display = 'block';
+                
+                // הסרת האקטיביות מכל הקוביות
+                personalCube.classList.remove('active');
+                professionalCube.classList.remove('active');
+                coupleCube.classList.remove('active');
+                
+                // הוספת אקטיביות לקובייה הנוכחית
+                personalCube.classList.add('active');
+            });
+            
+            professionalCube.addEventListener('click', function() {
+                // הסתרת כל הטפסים
+                personalForm.style.display = 'none';
+                professionalForm.style.display = 'none';
+                coupleForm.style.display = 'none';
+                
+                // הצגת הטופס המתאים
+                professionalForm.style.display = 'block';
+                
+                // הסרת האקטיביות מכל הקוביות
+                personalCube.classList.remove('active');
+                professionalCube.classList.remove('active');
+                coupleCube.classList.remove('active');
+                
+                // הוספת אקטיביות לקובייה הנוכחית
+                professionalCube.classList.add('active');
+            });
+            
+            coupleCube.addEventListener('click', function() {
+                // הסתרת כל הטפסים
+                personalForm.style.display = 'none';
+                professionalForm.style.display = 'none';
+                coupleForm.style.display = 'none';
+                
+                // הצגת הטופס המתאים
+                coupleForm.style.display = 'block';
+                
+                // הסרת האקטיביות מכל הקוביות
+                personalCube.classList.remove('active');
+                professionalCube.classList.remove('active');
+                coupleCube.classList.remove('active');
+                
+                // הוספת אקטיביות לקובייה הנוכחית
+                coupleCube.classList.add('active');
+            });
+            
+            // טיפול בשליחת טפסים
+            personalForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('התחזית האישית נשלחה בהצלחה!');
+                window.location.href = 'personal-results.html?id=' + Date.now();
+            });
+            
+            professionalForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('התחזית המקצועית נשלחה בהצלחה!');
+                window.location.href = 'professional-results.html?id=' + Date.now();
+            });
+            
+            coupleForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('התחזית הזוגית נשלחה בהצלחה!');
+                window.location.href = 'results.html?id=' + Date.now() + '&type=couple';
+            });
         });
     </script>
-    
-    <script src="js/main.js"></script>
 </body>
 </html>
