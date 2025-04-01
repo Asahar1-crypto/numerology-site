@@ -6,6 +6,50 @@
     <title>נומרולוגיה ישראלית - גלה את סודות המספרים שלך</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        /* תיקון לבעיית התצוגה של הטפסים */
+        .forecast-form {
+            display: none; /* כברירת מחדל הטפסים מוסתרים */
+        }
+        
+        /* אנימציות כניסה */
+        .hero, .forecast-selection, .form-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(36, 32, 56, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(168, 124, 199, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid var(--secondary-color);
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -65,7 +109,7 @@
                 <button type="submit" class="submit-btn">קבל תחזית</button>
             </form>
 
-            <form id="professional-form" class="forecast-form hidden">
+            <form id="professional-form" class="forecast-form">
                 <h3>תחזית מקצועית</h3>
                 <div class="form-group">
                     <label for="professional-name">שם מלא</label>
@@ -89,7 +133,7 @@
                 <button type="submit" class="submit-btn">קבל תחזית</button>
             </form>
 
-            <form id="couple-form" class="forecast-form hidden">
+            <form id="couple-form" class="forecast-form">
                 <h3>תחזית זוגית</h3>
                 <div class="form-section">
                     <h4>פרטיך האישיים</h4>
@@ -158,6 +202,37 @@
         </div>
     </footer>
 
+    <script>
+        // סקריפט לאנימציית כניסת אלמנטים
+        document.addEventListener('DOMContentLoaded', function() {
+            // אנימציות כניסה לאלמנטים
+            const hero = document.querySelector('.hero');
+            const forecastSelection = document.querySelector('.forecast-selection');
+            const formContainer = document.querySelector('.form-container');
+            
+            if (hero) {
+                setTimeout(() => {
+                    hero.style.opacity = '1';
+                    hero.style.transform = 'translateY(0)';
+                }, 100);
+            }
+            
+            if (forecastSelection) {
+                setTimeout(() => {
+                    forecastSelection.style.opacity = '1';
+                    forecastSelection.style.transform = 'translateY(0)';
+                }, 300);
+            }
+            
+            if (formContainer) {
+                setTimeout(() => {
+                    formContainer.style.opacity = '1';
+                    formContainer.style.transform = 'translateY(0)';
+                }, 500);
+            }
+        });
+    </script>
+    
     <script src="js/main.js"></script>
 </body>
 </html>
