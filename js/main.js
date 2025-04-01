@@ -308,7 +308,9 @@ function navigateToResults(data) {
             url = `professional-results.html?id=${forecastId}`;
             break;
         case 'couple':
-            url = `couple-results.html?id=${forecastId}`;
+            // תיקון: משתמשים בדף התוצאות הכללי במקרה של תחזית זוגית
+            // מאחר שהקובץ couple-results.html אינו קיים
+            url = `results.html?id=${forecastId}&type=couple`;
             break;
         default:
             url = `results.html?id=${forecastId}`;
