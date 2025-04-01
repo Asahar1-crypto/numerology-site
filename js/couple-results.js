@@ -37,4 +37,66 @@ document.addEventListener('DOMContentLoaded', function() {
             if (person1Birthdate) person1Birthdate.textContent = formatDate(new Date(data.person1.dob)) || '';
             if (person1Destiny) person1Destiny.textContent = data.person1.destinyNumber || '';
             if (person1Expression) person1Expression.textContent = data.person1.expressionNumber || '';
-            if (person
+            if (person1Personality) person1Personality.textContent = data.person1.personalityNumber || '';
+            if (person1Soul) person1Soul.textContent = data.person1.soulNumber || '';
+        }
+        
+        // עדכון פרטי בן/בת הזוג השני/ה
+        if (data.person2) {
+            if (person2Name) person2Name.textContent = data.person2.name || '';
+            if (person2Birthdate) person2Birthdate.textContent = formatDate(new Date(data.person2.dob)) || '';
+            if (person2Destiny) person2Destiny.textContent = data.person2.destinyNumber || '';
+            if (person2Expression) person2Expression.textContent = data.person2.expressionNumber || '';
+            if (person2Personality) person2Personality.textContent = data.person2.personalityNumber || '';
+            if (person2Soul) person2Soul.textContent = data.person2.soulNumber || '';
+        }
+        
+        // אנימציה מיוחדת לפרופיל הזוגי
+        animateCoupleProfiles();
+    }
+    
+    // פונקציה לאנימציה של פרופילי בני הזוג
+    function animateCoupleProfiles() {
+        const person1Profile = document.getElementById('person1-profile');
+        const person2Profile = document.getElementById('person2-profile');
+        const connector = document.querySelector('.couple-connector');
+        
+        if (person1Profile) {
+            person1Profile.style.opacity = '0';
+            person1Profile.style.transform = 'translateX(20px)';
+            
+            setTimeout(() => {
+                person1Profile.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                person1Profile.style.opacity = '1';
+                person1Profile.style.transform = 'translateX(0)';
+            }, 300);
+        }
+        
+        if (connector) {
+            connector.style.opacity = '0';
+            
+            setTimeout(() => {
+                connector.style.transition = 'opacity 0.8s ease';
+                connector.style.opacity = '1';
+            }, 600);
+        }
+        
+        if (person2Profile) {
+            person2Profile.style.opacity = '0';
+            person2Profile.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                person2Profile.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                person2Profile.style.opacity = '1';
+                person2Profile.style.transform = 'translateX(0)';
+            }, 900);
+        }
+    }
+    
+    // פונקציה לפורמט תאריך
+    function formatDate(date) {
+        if (!date || isNaN(date)) return '';
+        
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Intl.DateTimeFormat('he-IL', options).format(date);
+    }
