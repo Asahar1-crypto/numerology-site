@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const urlParams = new URLSearchParams(window.location.search);
     const forecastId = urlParams.get('id');
+    const forecastType = urlParams.get('type') || 'personal'; // ברירת מחדל אישי
 
     if (forecastId) {
         loadForecastData(forecastId);
@@ -75,134 +76,174 @@ document.addEventListener('DOMContentLoaded', function() {
     shareBtn.addEventListener('click', shareForecast);
     printBtn.addEventListener('click', () => window.print());
 
+    // פונקציה לטעינת נתוני התחזית
     function loadForecastData(id) {
         showLoadingAnimation();
 
         try {
-            // כאן השינוי: טעינת נתונים מlocal storage במקום ליצור סימולציה
-            const history = JSON.parse(localStorage.getItem('forecastHistory') || '[]');
-            console.log('היסטוריית תחזיות:', history);
-            
-            const forecast = history.find(item => item.id === id);
-            console.log('תחזית שנמצאה:', forecast);
-            
-            if (!forecast) {
-                // אם לא נמצאה תחזית אמיתית, נשתמש בסימולציה
-                console.log('התחזית לא נמצאה, משתמש בסימולציה');
-                forecastData = generateMockForecastData(id);
+            // ניסיון לקבל היסטוריה מהלוקל סטורג'
+            let history = JSON.parse(localStorage.getItem('forecastHistory') || '[]');
+            let savedForecast = history.find(item => item.id === id);
+
+            if (savedForecast) {
+                // אם נמצא במאגר, להשתמש בו
+                setTimeout(() => {
+                    forecastData = savedForecast.data;
+                    displayForecastData(forecastData);
+                    hideLoadingAnimation();
+                }, 500);
             } else {
-                // אם נמצאה תחזית, נשתמש בה
-                console.log('נמצאה תחזית בהיסטוריה');
-                forecastData = forecast.data;
+                // אם לא נמצא, לייצר חדש
+                setTimeout(() => {
+                    forecastData = generateMockForecastData(id);
+                    displayForecastData(forecastData);
+                    hideLoadingAnimation();
+                }, 1000);
             }
-            
-            displayForecastData(forecastData);
-            hideLoadingAnimation();
-            
         } catch (e) {
-            console.error('שגיאה בטעינת נתוני תחזית:', e);
+            console.error('Error loading forecast data:', e);
             hideLoadingAnimation();
             showNotification('טעינת הנתונים נכשלה, אנא נסה שנית.', 'error');
         }
     }
 
+    // פונקציה להצגת נתוני התחזית בדף
     function displayForecastData(data) {
-        // עדכון תאריך התחזית
-        document.getElementById('forecast-date').textContent = formatDate(new Date());
-        
-        console.log('מציג נתוני תחזית:', data);
-        
-        // בדיקה לאיזה מבנה נתונים יש לנו (מAPI או מסימולציה)
-        let results;
-        if (data.results) {
-            // תבנית מAPI של GPT
-            results = data.results;
-        } else {
-            // תבנית מסימולציה
-            results = data;
+        try {
+            // עדכון כותרת הדף
+            document.getElementById('forecast-title').textContent = getTitleByType(data.forecastType);
+            
+            // עדכון תאריך
+            const forecastDateElement = document.getElementById('forecast-date');
+            if (forecastDateElement) {
+                forecastDateElement.textContent = formatDate(new Date());
+            }
+            
+            // עדכון מספר הגורל
+            const destinyNumberElement = document.getElementById('destiny-number');
+            if (destinyNumberElement) {
+                destinyNumberElement.textContent = data.destinyNumber || '7';
+            }
+            
+            // עדכון הסבר מספר הגורל
+            const destinyExplanationElement = document.getElementById('destiny-explanation');
+            if (destinyExplanationElement) {
+                destinyExplanationElement.textContent = getDestinyExplanation(data.destinyNumber);
+            }
+            
+            // עדכון מספרי הגלגל
+            updateNumerologyNumbers(data);
+            
+            // יצירת הגלגל הנומרולוגי
+            createNumerologyWheel(data);
+            
+            // עדכון תכונות אישיות
+            updatePersonalTraits(data.traits);
+            
+            // עדכון חוזקות
+            updateStrengths(data.strengths);
+            
+            // עדכון אתגרים
+            updateChallenges(data.challenges);
+            
+            // עדכון המלצות
+            updateRecommendations(data.recommendations);
+            
+            // אנימציה של תוצאות
+            animateElements();
+        } catch (error) {
+            console.error('Error displaying forecast data:', error);
+            showNotification('אירעה שגיאה בהצגת הנתונים. אנא טען מחדש את הדף.', 'error');
         }
-        
-        // עדכון מספר גורל והסבר
-        const destinyNumber = document.getElementById('destiny-number');
-        const destinyExplanation = document.getElementById('destiny-explanation');
-        
-        // כאן אנחנו בודקים את המבנה של התוצאות ומשתמשים בשדות המתאימים
-        if (results.destinyNumber) {
-            destinyNumber.textContent = results.destinyNumber;
-        } else if (results.destinyNum) { // שם שדה אלטרנטיבי לסימולציה
-            destinyNumber.textContent = results.destinyNum;
-        }
-        
-        if (results.destinyExplanation) {
-            destinyExplanation.textContent = results.destinyExplanation;
-        } else if (results.destinyDesc) { // שם שדה אלטרנטיבי לסימולציה
-            destinyExplanation.textContent = results.destinyDesc;
-        }
-        
-        // עדכון מספרי גלגל המספרים
-        updateWheelNumbers(results);
-        
-        // יצירת גלגל המספרים
-        createNumerologyWheel(results);
-        
-        // עדכון תכונות אישיות
-        updatePersonalTraits(results);
-        
-        // עדכון חוזקות ואתגרים
-        updateStrengthsAndChallenges(results);
-        
-        // עדכון המלצות
-        updateRecommendations(results);
-        
-        // אנימציה להופעת האלמנטים
-        animateElements();
     }
-    
-    function updateWheelNumbers(results) {
-        // מספר השם
+
+    // פונקציה לקבלת כותרת לפי סוג התחזית
+    function getTitleByType(type) {
+        switch(type) {
+            case 'personal': return 'התחזית האישית שלך';
+            case 'professional': return 'התחזית המקצועית שלך';
+            case 'couple': return 'התחזית הזוגית שלך';
+            default: return 'התחזית הנומרולוגית שלך';
+        }
+    }
+
+    // פונקציה לעדכון מספרי הגלגל הנומרולוגי
+    function updateNumerologyNumbers(data) {
         const expressionNumber = document.getElementById('expression-number');
-        if (results.expressionNumber) {
-            expressionNumber.textContent = results.expressionNumber;
-        } else if (results.nameNumber) { // שם שדה אלטרנטיבי לסימולציה
-            expressionNumber.textContent = results.nameNumber;
-        }
-        
-        // מספר האישיות
         const personalityNumber = document.getElementById('personality-number');
-        if (results.personalityNumber) {
-            personalityNumber.textContent = results.personalityNumber;
-        } else if (results.personalityNum) { // שם שדה אלטרנטיבי לסימולציה
-            personalityNumber.textContent = results.personalityNum;
-        }
-        
-        // מספר הנפש
         const soulNumber = document.getElementById('soul-number');
-        if (results.soulNumber) {
-            soulNumber.textContent = results.soulNumber;
-        } else if (results.soulNum) { // שם שדה אלטרנטיבי לסימולציה
-            soulNumber.textContent = results.soulNum;
-        }
-        
-        // מספר מסלול החיים
         const lifePathNumber = document.getElementById('life-path-number');
-        if (results.lifePathNumber) {
-            lifePathNumber.textContent = results.lifePathNumber;
-        } else if (results.lifePathNum) { // שם שדה אלטרנטיבי לסימולציה
-            lifePathNumber.textContent = results.lifePathNum;
-        }
+        
+        if (expressionNumber) expressionNumber.textContent = data.expressionNumber || '5';
+        if (personalityNumber) personalityNumber.textContent = data.personalityNumber || '3';
+        if (soulNumber) soulNumber.textContent = data.soulNumber || '8';
+        if (lifePathNumber) lifePathNumber.textContent = data.lifePathNumber || '9';
     }
-    
-    function updatePersonalTraits(results) {
+
+    // פונקציה ליצירת הגלגל הנומרולוגי
+    function createNumerologyWheel(data) {
+        const wheelContainer = document.getElementById('numerology-wheel-svg');
+        if (!wheelContainer) return;
+        
+        // יצירת ה-SVG לגלגל הנומרולוגי
+        const svgContent = `
+            <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="150" cy="150" r="145" fill="#242038" stroke="#4a4a4a" stroke-width="2" />
+                
+                <!-- מספר השם -->
+                <circle cx="150" cy="70" r="25" fill="#9c27b0" />
+                <text x="150" y="70" text-anchor="middle" dominant-baseline="central" fill="white" font-size="20" font-weight="bold">${data.expressionNumber || '5'}</text>
+                <text x="150" y="110" text-anchor="middle" fill="white" font-size="12">מספר השם</text>
+                
+                <!-- מספר האישיות -->
+                <circle cx="230" cy="150" r="25" fill="#2196f3" />
+                <text x="230" y="150" text-anchor="middle" dominant-baseline="central" fill="white" font-size="20" font-weight="bold">${data.personalityNumber || '3'}</text>
+                <text x="230" y="190" text-anchor="middle" fill="white" font-size="12">אישיות</text>
+                
+                <!-- מספר הנפש -->
+                <circle cx="150" cy="230" r="25" fill="#ff9800" />
+                <text x="150" y="230" text-anchor="middle" dominant-baseline="central" fill="white" font-size="20" font-weight="bold">${data.soulNumber || '8'}</text>
+                <text x="150" y="270" text-anchor="middle" fill="white" font-size="12">נפש</text>
+                
+                <!-- מספר מסלול החיים -->
+                <circle cx="70" cy="150" r="25" fill="#4caf50" />
+                <text x="70" y="150" text-anchor="middle" dominant-baseline="central" fill="white" font-size="20" font-weight="bold">${data.lifePathNumber || '9'}</text>
+                <text x="70" y="190" text-anchor="middle" fill="white" font-size="12">מסלול חיים</text>
+                
+                <!-- מספר הגורל במרכז -->
+                <circle cx="150" cy="150" r="40" fill="url(#destinyGradient)" />
+                <text x="150" y="150" text-anchor="middle" dominant-baseline="central" fill="white" font-size="30" font-weight="bold">${data.destinyNumber || '7'}</text>
+                
+                <!-- גרדיאנט למספר הגורל -->
+                <defs>
+                    <radialGradient id="destinyGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                        <stop offset="0%" style="stop-color:#a87cc7;" />
+                        <stop offset="100%" style="stop-color:#6a0dad;" />
+                    </radialGradient>
+                </defs>
+                
+                <!-- קווים מחברים -->
+                <line x1="150" y1="95" x2="150" y2="110" stroke="#9c27b0" stroke-width="2" />
+                <line x1="205" y1="150" x2="190" y2="150" stroke="#2196f3" stroke-width="2" />
+                <line x1="150" y1="205" x2="150" y2="190" stroke="#ff9800" stroke-width="2" />
+                <line x1="95" y1="150" x2="110" y2="150" stroke="#4caf50" stroke-width="2" />
+            </svg>
+        `;
+        
+        wheelContainer.innerHTML = svgContent;
+    }
+
+    // פונקציה לעדכון תכונות אישיות
+    function updatePersonalTraits(traits = []) {
         const traitsContainer = document.getElementById('personal-traits');
-        traitsContainer.innerHTML = '';
+        if (!traitsContainer) return;
         
-        let traits = [];
-        
-        if (results.personalTraits && Array.isArray(results.personalTraits)) {
-            traits = results.personalTraits;
-        } else if (results.traits && Array.isArray(results.traits)) { // שם שדה אלטרנטיבי לסימולציה
-            traits = results.traits;
+        if (!traits || traits.length === 0) {
+            // נתונים לדוגמה אם אין נתונים אמיתיים
+            traits = ['אינטואיטיבי', 'יצירתי', 'הרמוני', 'רגיש', 'אחראי', 'שאפתן', 'מנהיג', 'אנליטי', 'אמיץ'];
         }
+        
+        traitsContainer.innerHTML = '';
         
         traits.forEach(trait => {
             const traitElement = document.createElement('div');
@@ -211,30 +252,49 @@ document.addEventListener('DOMContentLoaded', function() {
             traitsContainer.appendChild(traitElement);
         });
     }
-    
-    function updateStrengthsAndChallenges(results) {
+
+    // פונקציה לעדכון חוזקות
+    function updateStrengths(strengths = []) {
         const strengthsList = document.getElementById('strengths-list');
-        const challengesList = document.getElementById('challenges-list');
+        if (!strengthsList) return;
+        
+        if (!strengths || strengths.length === 0) {
+            // נתונים לדוגמה
+            strengths = [
+                'יכולת התבוננות עמוקה',
+                'חשיבה מחוץ לקופסה',
+                'קשר חזק לאינטואיציה',
+                'יכולת הכלה רגשית גבוהה',
+                'כישורי מנהיגות טבעיים'
+            ];
+        }
         
         strengthsList.innerHTML = '';
-        challengesList.innerHTML = '';
-        
-        let strengths = [];
-        let challenges = [];
-        
-        if (results.strengths && Array.isArray(results.strengths)) {
-            strengths = results.strengths;
-        }
-        
-        if (results.challenges && Array.isArray(results.challenges)) {
-            challenges = results.challenges;
-        }
         
         strengths.forEach(strength => {
             const li = document.createElement('li');
             li.textContent = strength;
             strengthsList.appendChild(li);
         });
+    }
+
+    // פונקציה לעדכון אתגרים
+    function updateChallenges(challenges = []) {
+        const challengesList = document.getElementById('challenges-list');
+        if (!challengesList) return;
+        
+        if (!challenges || challenges.length === 0) {
+            // נתונים לדוגמה
+            challenges = [
+                'נטייה לביקורתיות יתר',
+                'קושי להתפשר',
+                'רגישות יתר למצבים חברתיים',
+                'נטייה להתבודדות בזמני לחץ',
+                'קושי לקבל ביקורת'
+            ];
+        }
+        
+        challengesList.innerHTML = '';
         
         challenges.forEach(challenge => {
             const li = document.createElement('li');
@@ -242,18 +302,24 @@ document.addEventListener('DOMContentLoaded', function() {
             challengesList.appendChild(li);
         });
     }
-    
-    function updateRecommendations(results) {
+
+    // פונקציה לעדכון המלצות
+    function updateRecommendations(recommendations = []) {
         const recommendationsList = document.getElementById('recommendations-list');
-        recommendationsList.innerHTML = '';
+        if (!recommendationsList) return;
         
-        let recommendations = [];
-        
-        if (results.recommendations && Array.isArray(results.recommendations)) {
-            recommendations = results.recommendations;
-        } else if (results.advice && Array.isArray(results.advice)) { // שם שדה אלטרנטיבי לסימולציה
-            recommendations = results.advice;
+        if (!recommendations || recommendations.length === 0) {
+            // נתונים לדוגמה
+            recommendations = [
+                'השנה מתאימה להתמקד בהתפתחות אישית ולמידה של מיומנויות חדשות.',
+                'חודש אוקטובר יהיה מתאים במיוחד להתחלות חדשות בתחום המקצועי.',
+                'הקדש זמן איכות ליקיריך במהלך החודשים הקרובים.',
+                'תרגול מדיטציה או פעילות רוחנית תסייע לאזן את האנרגיות שלך.',
+                'שים לב לאינטואיציה שלך בקבלת החלטות כלכליות בתקופה הקרובה.'
+            ];
         }
+        
+        recommendationsList.innerHTML = '';
         
         recommendations.forEach(recommendation => {
             const li = document.createElement('li');
@@ -262,191 +328,178 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function createNumerologyWheel(data) {
-        const wheelContainer = document.getElementById('numerology-wheel-svg');
-        wheelContainer.innerHTML = '';
-        
-        // יצירת SVG בסיסי
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('viewBox', '0 0 300 300');
-        svg.setAttribute('width', '100%');
-        svg.setAttribute('height', '100%');
-        
-        // יצירת מעגל חיצוני
-        const outerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        outerCircle.setAttribute('cx', '150');
-        outerCircle.setAttribute('cy', '150');
-        outerCircle.setAttribute('r', '140');
-        outerCircle.setAttribute('fill', 'rgba(36, 32, 56, 0.5)');
-        outerCircle.setAttribute('stroke', 'var(--secondary-color)');
-        outerCircle.setAttribute('stroke-width', '2');
-        svg.appendChild(outerCircle);
-        
-        // הוספת חלוקה פנימית (4 רבעים)
-        const horizontalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        horizontalLine.setAttribute('x1', '10');
-        horizontalLine.setAttribute('y1', '150');
-        horizontalLine.setAttribute('x2', '290');
-        horizontalLine.setAttribute('y2', '150');
-        horizontalLine.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
-        horizontalLine.setAttribute('stroke-width', '1');
-        svg.appendChild(horizontalLine);
-        
-        const verticalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        verticalLine.setAttribute('x1', '150');
-        verticalLine.setAttribute('y1', '10');
-        verticalLine.setAttribute('x2', '150');
-        verticalLine.setAttribute('y2', '290');
-        verticalLine.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
-        verticalLine.setAttribute('stroke-width', '1');
-        svg.appendChild(verticalLine);
-        
-        // הוספת מעגל מרכזי עם מספר הגורל
-        const centerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        centerCircle.setAttribute('cx', '150');
-        centerCircle.setAttribute('cy', '150');
-        centerCircle.setAttribute('r', '40');
-        centerCircle.setAttribute('fill', 'var(--primary-color)');
-        svg.appendChild(centerCircle);
-        
-        // הוספת מספר הגורל במרכז
-        const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        centerText.setAttribute('x', '150');
-        centerText.setAttribute('y', '160');
-        centerText.setAttribute('text-anchor', 'middle');
-        centerText.setAttribute('fill', 'white');
-        centerText.setAttribute('font-size', '28px');
-        centerText.setAttribute('font-weight', 'bold');
-        
-        let destinyNum = '?';
-        if (data.destinyNumber) {
-            destinyNum = data.destinyNumber;
-        } else if (data.destinyNum) {
-            destinyNum = data.destinyNum;
-        }
-        
-        centerText.textContent = destinyNum;
-        svg.appendChild(centerText);
-        
-        // הוספת מספרי המשנה מסביב למעגל
-        addNumberCircle(svg, 'expression', '#9c27b0', 75, 75, getExpressionNumber(data));
-        addNumberCircle(svg, 'personality', '#2196f3', 225, 75, getPersonalityNumber(data));
-        addNumberCircle(svg, 'soul', '#ff9800', 75, 225, getSoulNumber(data));
-        addNumberCircle(svg, 'life-path', '#4caf50', 225, 225, getLifePathNumber(data));
-        
-        wheelContainer.appendChild(svg);
-    }
-    
-    function getExpressionNumber(data) {
-        return data.expressionNumber || data.nameNumber || '?';
-    }
-    
-    function getPersonalityNumber(data) {
-        return data.personalityNumber || data.personalityNum || '?';
-    }
-    
-    function getSoulNumber(data) {
-        return data.soulNumber || data.soulNum || '?';
-    }
-    
-    function getLifePathNumber(data) {
-        return data.lifePathNumber || data.lifePathNum || '?';
-    }
-    
-    function addNumberCircle(svg, type, color, cx, cy, num) {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', cx);
-        circle.setAttribute('cy', cy);
-        circle.setAttribute('r', '30');
-        circle.setAttribute('fill', color);
-        svg.appendChild(circle);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', cx);
-        text.setAttribute('y', cy + 5);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('fill', 'white');
-        text.setAttribute('font-size', '20px');
-        text.setAttribute('font-weight', 'bold');
-        text.textContent = num;
-        svg.appendChild(text);
-    }
-
+    // פונקציה להנפשת אלמנטים בדף התוצאות
     function animateElements() {
-        const sections = document.querySelectorAll('.results-content > section');
-        sections.forEach((section, index) => {
-            setTimeout(() => {
-                section.style.opacity = '1';
-                section.style.transform = 'translateY(0)';
-            }, 100 * index);
+        const elements = [
+            document.querySelector('.destiny-number-section'),
+            document.querySelector('.numerology-wheel'),
+            document.querySelector('.personal-traits'),
+            document.querySelector('.strengths-challenges'),
+            document.querySelector('.recommendations')
+        ];
+        
+        elements.forEach((element, index) => {
+            if (element) {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, 100 + index * 150);
+            }
         });
     }
 
+    // פונקציה לשיתוף התחזית
+    function shareForecast() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'תחזית נומרולוגית אישית',
+                text: 'הנה התחזית הנומרולוגית האישית שלי!',
+                url: window.location.href
+            })
+            .then(() => showNotification('התחזית שותפה בהצלחה!', 'success'))
+            .catch(error => {
+                console.log('שגיאה בשיתוף:', error);
+                showNotification('השיתוף נכשל, אנא נסה שנית.', 'error');
+            });
+        } else {
+            const shareUrl = window.location.href;
+            prompt('העתק את הקישור הבא לשיתוף התחזית:', shareUrl);
+            showNotification('הקישור הועתק ללוח.', 'info');
+        }
+    }
+
+    // פונקציה לבדיקת סטטוס התחברות
     function checkLoginStatus() {
         isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
         
         if (isLoggedIn) {
+            // אם המשתמש מחובר
             loggedInInfo.classList.remove('hidden');
             loggedOutInfo.classList.add('hidden');
-            const storedUserName = localStorage.getItem('userName') || 'משתמש';
-            userName.textContent = storedUserName;
+            
+            // בדיקה אם יש שם משתמש שמור
+            const storedName = localStorage.getItem('userName');
+            if (userName && storedName) {
+                userName.textContent = storedName;
+            } else if (userName) {
+                userName.textContent = 'אורח';
+            }
         } else {
+            // אם המשתמש לא מחובר
             loggedInInfo.classList.add('hidden');
             loggedOutInfo.classList.remove('hidden');
         }
     }
 
+    // פונקציה לטיפול בהתחברות
     function handleLogin() {
-        const email = document.getElementById('login-email').value;
+        const emailInput = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        
+        if (!emailInput || !passwordInput) return;
+        
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        
+        if (!email || !password) {
+            showNotification('אנא מלא את כל השדות.', 'error');
+            return;
+        }
         
         // סימולציה של התחברות מוצלחת
         localStorage.setItem('userLoggedIn', 'true');
         localStorage.setItem('userEmail', email);
-        localStorage.setItem('userName', email.split('@')[0]);
+        localStorage.setItem('userName', email.split('@')[0]); // לוקחים את החלק לפני @ כשם המשתמש
         
         hideModal(loginModal);
-        checkLoginStatus();
         showNotification('התחברת בהצלחה!', 'success');
+        
+        // עדכון הממשק
+        checkLoginStatus();
     }
 
+    // פונקציה לטיפול בהרשמה
     function handleRegistration() {
-        const name = document.getElementById('register-name').value;
-        const email = document.getElementById('register-email').value;
+        const nameInput = document.getElementById('register-name');
+        const emailInput = document.getElementById('register-email');
+        const passwordInput = document.getElementById('register-password');
+        
+        if (!nameInput || !emailInput || !passwordInput) return;
+        
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        
+        if (!name || !email || !password) {
+            showNotification('אנא מלא את כל השדות.', 'error');
+            return;
+        }
         
         // סימולציה של הרשמה מוצלחת
         localStorage.setItem('userLoggedIn', 'true');
-        localStorage.setItem('userEmail', email);
         localStorage.setItem('userName', name);
+        localStorage.setItem('userEmail', email);
         
         hideModal(registerModal);
-        checkLoginStatus();
         showNotification('נרשמת בהצלחה!', 'success');
-    }
-
-    function handleLogout() {
-        localStorage.removeItem('userLoggedIn');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('userName');
         
+        // עדכון הממשק
         checkLoginStatus();
-        userMenu.classList.remove('active');
-        showNotification('התנתקת בהצלחה!', 'success');
     }
 
+    // פונקציה לטיפול בהתנתקות
+    function handleLogout() {
+        // מסירים את נתוני ההתחברות
+        localStorage.removeItem('userLoggedIn');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userEmail');
+        
+        // עדכון הממשק
+        checkLoginStatus();
+        
+        showNotification('התנתקת בהצלחה!', 'info');
+    }
+
+    // פונקציה לשמירת היסטוריית תחזיות
+    function saveForecastHistory(id, data) {
+        try {
+            let history = JSON.parse(localStorage.getItem('forecastHistory') || '[]');
+            if (history.length >= 3 && !isUserLoggedIn()) {
+                history.shift();
+            }
+            history.push({ id, type: data.forecastType, date: new Date().toISOString(), data });
+            localStorage.setItem('forecastHistory', JSON.stringify(history));
+        } catch (e) {
+            console.error('Error saving forecast history:', e);
+            showNotification('אירעה שגיאה בשמירת התחזית. אנא נסה שנית.', 'error');
+        }
+    }
+
+    // פונקציה להצגת חלונית
     function showModal(modal) {
+        if (!modal) return;
+        
         modal.classList.add('active');
     }
 
+    // פונקציה להסתרת חלונית
     function hideModal(modal) {
+        if (!modal) return;
+        
         modal.classList.remove('active');
     }
 
+    // פונקציה להצגת אנימציית טעינה
     function showLoadingAnimation() {
         const loadingEl = document.createElement('div');
         loadingEl.className = 'loading-overlay';
         loadingEl.innerHTML = `
             <div class="loading-spinner"></div>
-            <p>טוען את התחזית שלך...</p>
+            <p>טוען את התחזית...</p>
         `;
         
         document.body.appendChild(loadingEl);
@@ -456,6 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 10);
     }
 
+    // פונקציה להסתרת אנימציית טעינה
     function hideLoadingAnimation() {
         const loadingEl = document.querySelector('.loading-overlay');
         if (loadingEl) {
@@ -466,113 +520,243 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // פונקציה להצגת הודעה למשתמש
     function showNotification(message, type = 'info') {
         const notificationEl = document.createElement('div');
         notificationEl.className = `notification ${type}`;
-        notificationEl.innerHTML = `<p>${message}</p>`;
+        notificationEl.textContent = message;
         
         document.body.appendChild(notificationEl);
         
         setTimeout(() => {
             notificationEl.style.opacity = '1';
-            notificationEl.style.transform = 'translateX(-50%) translateY(0)';
+            notificationEl.style.transform = 'translateY(0)';
         }, 10);
         
         setTimeout(() => {
             notificationEl.style.opacity = '0';
-            notificationEl.style.transform = 'translateX(-50%) translateY(-10px)';
+            notificationEl.style.transform = 'translateY(-10px)';
+            
             setTimeout(() => {
                 document.body.removeChild(notificationEl);
             }, 300);
-        }, 4000);
+        }, 3000);
     }
 
+    // פונקציה לפורמט תאריך
     function formatDate(date) {
+        if (!date) return '';
+        
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return date.toLocaleDateString('he-IL', options);
+        return new Intl.DateTimeFormat('he-IL', options).format(date);
     }
 
-    // פונקציה ליצירת תחזית לדוגמה - רק אם אין נתונים אמיתיים
+    // פונקציה לקבלת הסבר למספר גורל
+    function getDestinyExplanation(number) {
+        const explanations = {
+            '1': 'אתה מיועד להיות מנהיג ולהוביל אחרים. עם יכולת משופרת ליצור מציאות חדשה, עליך להתמקד בעצמאות, בטחון עצמי, ויזמות. אתה חלוץ טבעי ויש לך את הכוח להגשים כל רעיון שתבחר.',
+            
+            '2': 'את מוצאת הרמוניה באינטראקציות אנושיות ושיתופי פעולה. עם רגישות גבוהה ואינטואיציה חדה, יש לך יכולת לאזן ולתווך. תפקידך הוא לחבר בין אנשים ולבנות שלום.',
+            
+            '3': 'האנרגיה היצירתית שלך זורמת בחופשיות. כבעל/ת מספר גורל 3, יש לך כישרון בביטוי עצמי ויכולת להעביר רעיונות באופן מרתק. מטרתך היא לשתף את האמת שלך עם העולם דרך אמנות, כתיבה או דיבור.',
+            
+            '4': 'הייעוד שלך קשור בבניית מסגרות יציבות וארוכות טווח. את/ה אדם אמין וקשה-עבודה המביא סדר לכאוס. המשימה שלך בחיים היא לבנות יסודות מוצקים לעצמך ולאחרים.',
+            
+            '5': 'נולדת להיות חופשי ולחקור את העולם. כבעל/ת מספר גורל 5, את/ה מונע/ת על ידי סקרנות והרפתקנות. תפקידך הוא לחוות את החיים במלואם ולהתאים עצמך לשינויים בקלות.',
+            
+            '6': 'יש לך תחושת אחריות מולדת וצורך לטפל באחרים. אתה מביא אהבה ללא תנאי ורצון לשרת. תפקידך הוא ליצור הרמוניה בבית ובקהילה ולהיות אור מנחה לאחרים.',
+            
+            '7': 'אתה נשמה חוקרת במסע רוחני. כבעל מספר גורל 7, יש לך תודעה אנליטית ורצון לגלות את האמת. תפקידך הוא לחפש ידע, להגיע להארה רוחנית, ולשתף את חוכמתך עם אחרים.',
+            
+            '8': 'נולדת להשיג עוצמה והצלחה חומרית. יש לך הבנה אינטואיטיבית של כוח ויכולת לממש חזון גדול. תפקידך הוא לשגשג כדי להשפיע לטובה ולהשתמש במשאביך כדי לעזור לאחרים.',
+            
+            '9': 'אתה אדם הומניטרי עם אמפתיה גבוהה. כבעל מספר גורל 9, יש לך תשוקה לצדק חברתי ושיפור המצב האנושי. תפקידך הוא להשפיע על מספר גדול של אנשים ולהביא שינוי חיובי.'
+        };
+        
+        return explanations[number] || 'מספר הגורל שלך מכיל את המיסטיקה והחכמה היקומית שמלווה אותך בכל צעד בחייך. הוא מגלה את הפוטנציאל הגדול והאתגרים שעליך להתגבר עליהם בדרך להגשמת הייעוד שלך.';
+    }
+
+    // פונקציה ליצירת נתוני תחזית לדוגמה
     function generateMockForecastData(id) {
-        // הפונקציה הזו תייצר נתונים מגוונים על סמך ה-ID כדי שתחזיות שונות יקבלו תוצאות שונות
-        const idNum = parseInt(id.slice(-5)) || 0;
-        const destinyNums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        const selectedNum = destinyNums[idNum % destinyNums.length];
+        // מספרים אקראיים עבור נתוני המשתמש
+        const destinyNumber = String(Math.floor(Math.random() * 9) + 1);
+        const expressionNumber = String(Math.floor(Math.random() * 9) + 1);
+        const personalityNumber = String(Math.floor(Math.random() * 9) + 1);
+        const soulNumber = String(Math.floor(Math.random() * 9) + 1);
+        const lifePathNumber = String(Math.floor(Math.random() * 9) + 1);
         
-        const descriptions = [
-            "מספר גורל 1 מסמל מנהיגות, עצמאות ומקוריות. אנשים אלו הם חלוצים טבעיים שלא מפחדים להוביל ולחדש. בעלי ביטחון עצמי ויצירתיות, הם מסוגלים להשיג כל מטרה שיציבו לעצמם.",
-            "מספר גורל 2 מסמל שיתוף פעולה, איזון והרמוניה. אנשים אלו הם מתווכים טבעיים ומשתפי פעולה מעולים, עם רגישות ואינטואיציה גבוהה. הם מצטיינים בבניית יחסים ופתרון קונפליקטים.",
-            "מספר גורל 3 מסמל יצירתיות, ביטוי עצמי ואופטימיות. אנשים אלו הם תקשורתיים, אמנותיים ומלאי שמחת חיים. הם מפיצים אנרגיה חיובית ומעוררים השראה בסביבתם.",
-            "מספר גורל 4 מסמל יציבות, סדר ואמינות. אנשים אלו בונים יסודות איתנים והם בעלי אתיקת עבודה חזקה. אחראיים ומעשיים, הם מצטיינים בתכנון ארוך טווח ובביצוע מדויק.",
-            "מספר גורל 5 מסמל חופש, הרפתקנות ושינוי. אנשים אלו אוהבים חוויות חדשות ושואפים לגיוון. סקרנים וורסטיליים, הם מסתגלים במהירות ואוהבים להתנסות בדברים חדשים.",
-            "מספר גורל 6 מסמל אחריות, טיפוח והרמוניה בבית. אנשים אלו דואגים לאחרים ומציבים את המשפחה במרכז. הם בעלי חוש צדק מפותח ונוטים לדאוג לסביבתם הקרובה.",
-            "מספר גורל 7 מסמל אינטלקט, חקירה ורוחניות. אנשים אלו אנליטיים, מעמיקים ובעלי תפיסה אינטואיטיבית. הם מחפשים ידע ותובנות רוחניות ומתאפיינים בחשיבה עצמאית.",
-            "מספר גורל 8 מסמל כוח, שליטה והישגיות חומרית. אנשים אלו שואפים להצלחה ומעריכים ביטחון כלכלי. הם מנהיגים טבעיים בעולם העסקי ובעלי יכולת ארגונית מצוינת.",
-            "מספר גורל 9 מסמל הומניטריות, אידיאליזם והארה. אנשים אלו רחבי אופקים, נדיבים ואלטרואיסטים. הם שואפים לתרום לאנושות ולהשאיר חותם משמעותי בעולם."
+        // מאגרי תכונות אישיות לפי סוג התחזית
+        const personalTraits = [
+            'אינטואיטיבי', 'יצירתי', 'רגיש', 'אחראי', 'שאפתן', 'מנהיג', 'אנליטי', 
+            'אמיץ', 'סבלני', 'נדיב', 'אופטימי', 'הרפתקן', 'רגוע', 'מתחשב'
         ];
         
-        const traits = [
-            ["מנהיגותי", "יצירתי", "עצמאי", "החלטי", "אמביציוזי"],
-            ["דיפלומטי", "רגיש", "אינטואיטיבי", "סבלני", "שיתופי"],
-            ["אופטימי", "מלא חיים", "תקשורתי", "אמנותי", "מעורר השראה"],
-            ["מעשי", "מאורגן", "אמין", "יסודי", "עקבי"],
-            ["הרפתקני", "גמיש", "סקרן", "מגוון", "חופשי"],
-            ["אחראי", "נאמן", "מטפח", "צודק", "אוהב"],
-            ["אנליטי", "מעמיק", "אינטלקטואלי", "בודד", "אינטואיטיבי"],
-            ["שאפתני", "פרקטי", "מצליח", "מארגן", "אוטוריטטיבי"],
-            ["אלטרואיסט", "רחב אופקים", "מעורר השראה", "חומל", "אצילי"]
+        const professionalTraits = [
+            'מוכוון מטרה', 'חדשני', 'אסטרטגי', 'מתמיד', 'יעיל', 'מקצועי', 'מאורגן', 
+            'יוזם', 'החלטי', 'מנהיגותי', 'אנליטי', 'יצירתי', 'מתקשר היטב', 'פותר בעיות'
         ];
         
-        const strengths = [
-            ["ביטחון עצמי גבוה", "יכולת הובלה טבעית", "חשיבה יצירתית"],
-            ["אמפתיה עמוקה", "יכולת גישור מצוינת", "אינטואיציה חדה"],
-            ["אופטימיות מדבקת", "כישרון אמנותי", "יכולות ביטוי מעולות"],
-            ["אמינות ללא פשרות", "יכולת ארגון יוצאת דופן", "התמדה ונחישות"],
-            ["יכולת הסתגלות מהירה", "אהבת חיים וריגושים", "יכולת שכנוע טבעית"],
-            ["נאמנות ללא גבולות", "חוש צדק מפותח", "יכולת טיפוח והענקה"],
-            ["יכולת ניתוח מעמיקה", "חשיבה ביקורתית", "ידע רב תחומי"],
-            ["מיקוד במטרה", "תפיסה עסקית מצוינת", "יכולת ניהול משאבים"],
-            ["נדיבות אמיתית", "ראייה רחבה", "חמלה כלפי האנושות"]
+        const coupleTraits = [
+            'אמפתי', 'תומך', 'מסור', 'אוהב', 'סבלני', 'פתוח', 'מתקשר היטב', 
+            'נאמן', 'גמיש', 'סלחן', 'רומנטי', 'משתף פעולה', 'מבין', 'מאוזן'
         ];
         
-        const challenges = [
-            ["אגוצנטריות יתר", "חוסר סבלנות", "עקשנות מוגזמת"],
-            ["הימנעות מעימותים", "תלות יתר באחרים", "רגישות יתר"],
-            ["פיזור יתר", "נטייה להתרברבות", "קושי להתמקד"],
-            ["נוקשות וקיבעון", "ביקורתיות יתר", "קושי לקבל שינויים"],
-            ["קושי להתחייב", "חוסר יציבות", "שעמום מהיר"],
-            ["נטייה לביקורתיות", "לקיחת אחריות יתר", "התעייפות מדאגה לאחרים"],
-            ["הסתגרות יתר", "ספקנות מוגזמת", "ריחוק רגשי"],
-            ["שאפתנות יתר", "אובססיביות לחומר", "קשיחות מוגזמת"],
-            ["אידיאליזם יתר", "קושי לסגור מעגלים", "התעלמות מצרכים אישיים"]
+        // בחירת 6-8 תכונות אקראיות
+        function getRandomTraits(traitPool) {
+            const shuffledTraits = [...traitPool].sort(() => 0.5 - Math.random());
+            return shuffledTraits.slice(0, Math.floor(Math.random() * 3) + 6);
+        }
+        
+        // בחירת מאגר תכונות לפי סוג התחזית
+        let traitPool;
+        let forecastType = urlParams.get('type') || 'personal';
+        
+        switch(forecastType) {
+            case 'professional':
+                traitPool = professionalTraits;
+                break;
+            case 'couple':
+                traitPool = coupleTraits;
+                break;
+            default:
+                traitPool = personalTraits;
+                forecastType = 'personal';
+        }
+        
+        // חוזקות ואתגרים אקראיים
+        const allStrengths = [
+            'יכולת התבוננות עמוקה',
+            'חשיבה מחוץ לקופסה',
+            'קשר חזק לאינטואיציה',
+            'יכולת הכלה רגשית גבוהה',
+            'כישורי מנהיגות טבעיים',
+            'התמדה יוצאת דופן',
+            'אמפתיה וחמלה',
+            'תקשורת ברורה וישירה',
+            'יצירתיות ודמיון עשיר',
+            'יכולת ניתוח מעמיקה',
+            'כושר ארגון וסדר',
+            'אופטימיות ותקווה'
         ];
         
-        const recommendations = [
-            ["פתח את היכולת להקשיב לאחרים", "למד לשתף פעולה בפרויקטים משותפים", "מצא איזון בין מנהיגות לשיתוף פעולה"],
-            ["חזק את הביטחון העצמי שלך", "למד להביע את דעתך בבהירות", "הצב גבולות בריאים במערכות יחסים"],
-            ["פתח משמעת עצמית ומיקוד", "תרגל הקשבה פעילה", "נצל את היצירתיות שלך בצורה מובנית"],
-            ["תרגל גמישות מחשבתית", "אפשר לעצמך יותר ספונטניות", "קבל שינויים כהזדמנות לצמיחה"],
-            ["פתח התמדה בפרויקטים ארוכי טווח", "חפש משמעות עמוקה בחוויות", "תרגל מחויבות ואחריות"],
-            ["הקדש זמן לטיפול עצמי", "למד לשחרר שליטה", "אפשר לאחרים לקחת אחריות על חייהם"],
-            ["פתח את היכולת לשתף רגשות", "השתתף יותר באירועים חברתיים", "איזון בין חשיבה לרגש"],
-            ["הקדש זמן לפעילויות ללא מטרה חומרית", "פתח חמלה ורכות", "שתף אחרים בהצלחותיך"],
-            ["למד לקבל ולא רק לתת", "התמקד בפרויקטים ממוקדים", "סיים דברים שהתחלת לפני שתתחיל חדשים"]
+        const allChallenges = [
+            'נטייה לביקורתיות יתר',
+            'קושי להתפשר',
+            'רגישות יתר למצבים חברתיים',
+            'נטייה להתבודדות בזמני לחץ',
+            'קושי לקבל ביקורת',
+            'נטייה לדחיינות',
+            'קושי לבטא רגשות',
+            'נטייה לשיפוטיות',
+            'קושי לשמור על איזון',
+            'נטייה לוותר מהר מדי',
+            'חשש מכישלון',
+            'קושי להציב גבולות'
         ];
         
-        // בחירת ערכים לפי מספר הגורל שנבחר
-        const idx = selectedNum - 1;
+        // המלצות אקראיות
+        const allRecommendations = [
+            'השנה מתאימה להתמקד בהתפתחות אישית ולמידה של מיומנויות חדשות.',
+            'חודש אוקטובר יהיה מתאים במיוחד להתחלות חדשות בתחום המקצועי.',
+            'הקדש זמן איכות ליקיריך במהלך החודשים הקרובים.',
+            'תרגול מדיטציה או פעילות רוחנית תסייע לאזן את האנרגיות שלך.',
+            'שים לב לאינטואיציה שלך בקבלת החלטות כלכליות בתקופה הקרובה.',
+            'שיתוף פעולה עם אנשים בעלי מספר גורל 4 או 8 יכול להביא להזדמנויות חדשות.',
+            'זהו זמן טוב להתחיל בפרויקט יצירתי שתמיד רצית לעשות.',
+            'חפש הזדמנויות ללימוד נושאים הקשורים לתחומי העניין האותנטיים שלך.',
+            'בחודשים נובמבר-דצמבר, הקדש תשומת לב מיוחדת לבריאותך.',
+            'מערכות יחסים חדשות שיתחילו בחציון השני של השנה יישאו פוטנציאל משמעותי.',
+            'צפה להזדמנות להתקדמות מקצועית בין החודשים מרץ ליוני.',
+            'השנה מציעה הזדמנות מצוינת לשחרר דפוסים ישנים שאינם משרתים אותך עוד.'
+        ];
         
+        // בחירת פריטים אקראיים
+        function getRandomItems(array, count) {
+            return [...array].sort(() => 0.5 - Math.random()).slice(0, count);
+        }
+        
+        // יצירת אובייקט התחזית
         return {
-            destinyNum: selectedNum,
-            destinyDesc: descriptions[idx],
-            nameNumber: ((selectedNum + 1) % 9) || 9,
-            personalityNum: ((selectedNum + 3) % 9) || 9,
-            soulNum: ((selectedNum + 2) % 9) || 9,
-            lifePathNum: ((selectedNum + 4) % 9) || 9,
-            traits: traits[idx],
-            strengths: strengths[idx],
-            challenges: challenges[idx],
-            advice: recommendations[idx]
+            id: id,
+            forecastType: forecastType,
+            destinyNumber: destinyNumber,
+            expressionNumber: expressionNumber,
+            personalityNumber: personalityNumber,
+            soulNumber: soulNumber,
+            lifePathNumber: lifePathNumber,
+            traits: getRandomTraits(traitPool),
+            strengths: getRandomItems(allStrengths, 5),
+            challenges: getRandomItems(allChallenges, 5),
+            recommendations: getRandomItems(allRecommendations, 5)
         };
     }
+
+    // הוספת סגנונות למצב טעינה והודעות
+    document.head.insertAdjacentHTML('beforeend', `
+        <style>
+            .loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(36, 32, 56, 0.9);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .loading-spinner {
+                width: 60px;
+                height: 60px;
+                border: 5px solid rgba(168, 124, 199, 0.3);
+                border-radius: 50%;
+                border-top: 5px solid var(--secondary-color);
+                animation: spin 1s linear infinite;
+                margin-bottom: 20px;
+            }
+            
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            
+            .notification {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%) translateY(-10px);
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: bold;
+                z-index: 1100;
+                opacity: 0;
+                transition: opacity 0.3s ease, transform 0.3s ease;
+            }
+            
+            .notification.success {
+                background-color: #4caf50;
+            }
+            
+            .notification.error {
+                background-color: #f44336;
+            }
+            
+            .notification.info {
+                background-color: #2196f3;
+            }
+            
+            /* אנימציה לאלמנטים */
+            .destiny-number-section, .numerology-wheel, .personal-traits, 
+            .strengths-challenges, .recommendations {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        </style>
+    `);
 });
