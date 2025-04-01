@@ -1,136 +1,31 @@
-/* תיקון לקובץ style.css */
-:root {
-    --primary-color: #6a0dad;
-    --secondary-color: #a87cc7;
-    --text-light: #ffffff;
-    --text-dark: #242038;
-    --bg-dark: #242038;
-    --bg-light: #f8f9fa;
-    --accent-color: #ffcc00;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html, body {
-    font-family: 'Segoe UI', 'Arial Hebrew', sans-serif;
-    direction: rtl;
-    background-color: var(--bg-dark);
-    color: var(--text-light);
-    line-height: 1.6;
-}
-
-/* עדכון של מחלקת hidden לוידוא שהיא עובדת כראוי */
-.hidden {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-}
-
-/* Header */
-header {
-    text-align: center;
-    padding: 1.5rem 0;
-}
-
-.logo-container {
-    margin: 0 auto;
-    max-width: 200px;
-}
-
-.logo {
-    width: 100%;
-    height: auto;
-    filter: drop-shadow(0 0 10px rgba(170, 110, 240, 0.6));
-}
-
-/* Main Content */
-main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
-.hero {
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: var(--secondary-color);
-    text-shadow: 0 0 15px rgba(170, 110, 240, 0.4);
-}
-
-.subtitle {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-}
-
-/* Forecast Selection */
-.forecast-selection {
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-h2 {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-    color: var(--secondary-color);
-}
-
-.forecast-cubes {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-}
-
-.cube {
-    width: 180px;
-    height: 180px;
-    background: linear-gradient(145deg, #31294d, #242038);
-    border-radius: 15px;
+.destiny-number-circle {
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, var(--secondary-color), var(--primary-color));
+    border-radius: 50%;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    align-items: center;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(168, 124, 199, 0.5) inset;
     position: relative;
     overflow: hidden;
 }
 
-.cube::before {
+.destiny-number-circle::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
     width: 200%;
     height: 200%;
     background: linear-gradient(
-        to bottom right,
-        rgba(106, 13, 173, 0.1),
-        rgba(106, 13, 173, 0.05),
-        rgba(106, 13, 173, 0)
+        transparent, 
+        rgba(255, 255, 255, 0.1), 
+        transparent
     );
     transform: rotate(45deg);
-    z-index: 1;
-    transition: all 0.5s ease;
-}
-
-.cube:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-}
-
-.cube:hover::before {
-    animation: shine 1.5s infinite;
+    top: -50%;
+    left: -50%;
+    animation: shine 3s infinite;
 }
 
 @keyframes shine {
@@ -144,60 +39,434 @@ h2 {
     }
 }
 
-.cube.active {
-    border: 2px solid var(--accent-color);
-    box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
-    transform: scale(1.05);
+.destiny-number-circle .number {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: var(--text-light);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.cube.inactive {
-    opacity: 0.5;
-    transform: scale(0.95);
+.destiny-number-circle .title {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    opacity: 0.8;
 }
 
-.cube-icon {
-    font-size: 3rem;
+.destiny-explanation {
+    flex: 1;
+    min-width: 300px;
+}
+
+.destiny-explanation h2 {
+    color: var(--secondary-color);
+    font-size: 1.6rem;
     margin-bottom: 1rem;
 }
 
-.cube-title {
-    font-size: 1.2rem;
+.destiny-explanation p {
+    line-height: 1.6;
+    text-align: justify;
+}
+
+/* גלגל נומרולוגי */
+.numerology-wheel {
+    text-align: center;
+    padding: 1rem;
+}
+
+.numerology-wheel h2 {
+    color: var(--secondary-color);
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+}
+
+.wheel-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+.wheel-svg {
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+}
+
+.wheel-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    text-align: right;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+}
+
+.legend-color.expression {
+    background-color: #9c27b0;
+}
+
+.legend-color.personality {
+    background-color: #2196f3;
+}
+
+.legend-color.soul {
+    background-color: #ff9800;
+}
+
+.legend-color.life-path {
+    background-color: #4caf50;
+}
+
+.legend-text {
+    font-size: 1rem;
+}
+
+/* תכונות אישיות */
+.personal-traits {
+    padding: 1rem;
+}
+
+.personal-traits h2 {
+    color: var(--secondary-color);
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.traits-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.trait-tag {
+    background: rgba(170, 110, 240, 0.2);
+    border: 1px solid rgba(170, 110, 240, 0.5);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.trait-tag:hover {
+    background: rgba(170, 110, 240, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* חוזקות ואתגרים */
+.strengths-challenges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.section-half {
+    flex: 1;
+    min-width: 300px;
+}
+
+.section-half h2 {
+    color: var(--secondary-color);
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.strengths-list, .challenges-list {
+    list-style: none;
+    padding: 0;
+}
+
+.strengths-list li, .challenges-list li {
+    position: relative;
+    padding: 0.5rem 1.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.strengths-list li::before {
+    content: '\f058'; /* Font awesome check icon */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 0;
+    color: #4caf50;
+}
+
+.challenges-list li::before {
+    content: '\f06a'; /* Font awesome exclamation icon */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 0;
+    color: #ff9800;
+}
+
+/* המלצות */
+.recommendations {
+    background: rgba(36, 30, 60, 0.6);
+    border-radius: 15px;
+    padding: 2rem;
+}
+
+.recommendations h2 {
+    color: var(--secondary-color);
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.recommendations-list {
+    list-style: none;
+    padding: 0;
+}
+
+.recommendations-list li {
+    position: relative;
+    padding: 1rem 2rem 1rem 1rem;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.recommendations-list li::before {
+    content: '\f0eb'; /* Font awesome lightbulb icon */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 0.7rem;
+    color: var(--accent-color);
+}
+
+.recommendations-list li:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-5px);
+}
+
+/* אפשרויות תחזיות נוספות */
+.other-forecasts {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 0 2rem;
+}
+
+.other-forecasts h3 {
+    color: var(--secondary-color);
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+.other-forecasts-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.other-forecast-btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: var(--text-light);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.other-forecast-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* מודלים (חלונות קופצים) */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--bg-dark);
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    padding: 2rem;
+    position: relative;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: color 0.3s ease;
+}
+
+.close-modal:hover {
+    color: var(--accent-color);
+}
+
+.modal-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.modal-footer a {
+    color: var(--secondary-color);
+    text-decoration: none;
     font-weight: bold;
 }
 
-/* Forms */
-.form-container {
-    max-width: 600px;
-    margin: 0 auto;
-    background: rgba(36, 32, 56, 0.8);
-    border-radius: 15px;
-    padding: 2rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+/* תפריט משתמש */
+.user-menu {
+    position: absolute;
+    top: 5rem;
+    left: 1rem;
+    background-color: var(--bg-dark);
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    min-width: 200px;
+    overflow: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
 }
 
-/* עדכון לטופס התחזית */
-.forecast-form {
+.user-menu.active {
     opacity: 1;
-    transition: opacity 0.5s ease;
-    display: block; /* ערך ברירת מחדל הוא block */
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
-.forecast-form.hidden {
-    display: none !important;
+.user-menu-content {
+    padding: 1rem;
 }
 
-h3 {
+.user-info {
     text-align: center;
-    font-size: 1.6rem;
-    margin-bottom: 1.5rem;
-    color: var(--secondary-color);
 }
 
-h4 {
-    font-size: 1.2rem;
-    margin: 1.5rem 0 1rem;
-    color: var(--secondary-color);
+.btn-small {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: var(--text-light);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    transition: all 0.3s ease;
 }
 
-/* יתר הקוד נשאר זהה */
-/* ... */
+.btn-small:hover {
+    background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+}
+
+/* רספונסיביות */
+@media screen and (max-width: 768px) {
+    .results-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .results-content {
+        padding: 1.5rem;
+        gap: 2rem;
+    }
+    
+    .destiny-number-circle {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .destiny-number-circle .number {
+        font-size: 2.8rem;
+    }
+    
+    .wheel-svg {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .share-print-buttons {
+        top: 0.5rem;
+        left: 0.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .results-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .results-content {
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+    
+    .destiny-number-circle {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .destiny-number-circle .number {
+        font-size: 2.2rem;
+    }
+    
+    .wheel-svg {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .section-half {
+        min-width: auto;
+    }
+    
+    .strengths-challenges {
+        gap: 1rem;
+    }
+}
